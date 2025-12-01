@@ -1,0 +1,43 @@
+name: Flutter Release Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release-apk:
+    runs-on: ubuntu-latest
+    env:
+      KEYSTORE_B64: ${{ secrets.STAND_KEYSTORE_B64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.STAND_KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.STAND_KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.STAND_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Prepare keystore
+        if: env.KEYSTORE_B64 != ''
+        run: |
+          echo "$KEYSTORE_B64" | base64 --decode > stand_release.jks
+          mkdir -p app/flutter/android
+          # write key.properties
+          cat > app/flutter/android/key.properties <<EOF
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=$(pwd)/stand_release.jks
+          EOF
+
+      - name: Build release apk
+        working-directory: app/flutter
+        run: |
+          flutter pub get
+          flutter build apk --release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: app/flutter/build/app/outputs/flutter-apk/app-release.apk

@@ -1,0 +1,24 @@
+name: stand
+description: "Stand — LifeOS / PKM Android app prototype"
+version: 0.0.1
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  path_provider: ^2.0.14
+  flutter_markdown: ^1.5.0
+  uuid: ^3.0.7
+  provider: ^6.0.5
+  sqflite: ^2.2.8+4
+  path: ^1.8.4
+  http: ^1.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
